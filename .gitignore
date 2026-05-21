@@ -1,0 +1,11 @@
+# Ignorar o ambiente virtual do Python
+lucy-env/
+__pycache__/
+*.pyc
+
+# Ignorar as pastas de modelos do Vosk (pesadas demais para o GitHub)
+model/
+model_en/
+
+# Ignorar arquivos temporários de execução
+*.pid
