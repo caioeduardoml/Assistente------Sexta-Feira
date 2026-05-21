@@ -75,32 +75,50 @@ def processar_comando_fuzzy(fala_usuario):
     if not fala_usuario:
         return
 
-    print(f"-> Analisando texto: '{fala_usuario}'")
+    # 1. LIMPEZA DE GATILHOS REMANESCENTES
+    # Se o Vosk capturar "sexta feira abrir terminal" de uma vez só,
+    # limpamos o gatilho para a comparação focar estritamente na ordem.
+    for gatilho in GATILHOS_LUCY:
+        if fala_usuario.startswith(gatilho):
+            fala_usuario = fala_usuario.replace(gatilho, "", 1).strip()
+
+    if not fala_usuario:
+        return
+
+    print(f"-> Analisando texto limpo: '{fala_usuario}'")
     
     melhor_comando = None
     maior_porcentagem = 0
     
+    # 2. NOVA LÓGICA DE COMPARAÇÃO (MUITO MAIS ESTRITA)
     for comando_esperado in COMANDOS_PERMITIDOS.keys():
-        porcentagem = fuzz.partial_ratio(comando_esperado, fala_usuario)
+        # O token_sort_ratio ignora a ordem das palavras (ex: "volume aumentar" e "aumentar volume" dão 100%)
+        # Mas exige que as palavras sejam correspondentes quase exatas, matando o bug do "discord/vscode"
+        porcentagem = fuzz.token_sort_ratio(comando_esperado, fala_usuario)
+        
         if porcentagem > maior_porcentagem:
             maior_porcentagem = porcentagem
             melhor_comando = comando_esperado
             
-    if maior_porcentagem >= 75:
+    print(f"   [Fuzzy Match] Maior certeza: {maior_porcentagem}% com '{melhor_comando}'")
+
+    # 3. VALIDAÇÃO COM LIMITE ELEVADO (80% de precisão mínima)
+    if maior_porcentagem >= 80:
         if COMANDOS_PERMITIDOS[melhor_comando] == "FECHAR":
             enviar_notificacao("Sexta-Feira", "Desligando modo offline. Até mais!", "normal")
-            # Remove a trava de execução antes de fechar
             if os.path.exists("/tmp/sexta_feira.pid"):
                 os.remove("/tmp/sexta_feira.pid")
             os._exit(0)
             
-        # Otimização: start_new_session evita que o app aberto herde problemas do script
         subprocess.Popen(COMANDOS_PERMITIDOS[melhor_comando], 
                          stdout=subprocess.DEVNULL, 
                          stderr=subprocess.DEVNULL, 
                          start_new_session=True)
         enviar_notificacao("Sucesso", f"Executando: {melhor_comando}")
     else:
+        # Se não atingiu 80%, ela ignora silenciosamente para não abrir apps errados no seu Hyprland
+        print(f"   [Bloqueado] Comando ignorado por falta de certeza de segurança.")
+        enviar_notificacao("Sexta-Feira", f"Não entendi: '{fala_usuario}'", "low")
         enviar_notificacao("Sexta-Feira", f"Ouvido: '{fala_usuario}' (Não reconhecido)")
 
 # --- LOOP PRINCIPAL ---
