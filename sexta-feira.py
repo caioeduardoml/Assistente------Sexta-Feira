@@ -29,16 +29,18 @@ def audio_callback(indata, frames, time, status):
 # Ajustado com correções fonéticas (como o Vosk em PT-BR escuta palavras em inglês)
 COMANDOS_AGRUPADOS = {
     #--------- ABRIR -------------------------------
-    ("abrir vs code", "abrir vscode"): ["code", "--new-window"],
+    ("abrir vscode", "abrir vscode"): ["code", "--new-window"],
     ("abrir firefox", "abrir faiarfox", "abrir raposa"): ["firefox"],
-    ("abrir discord", "abrir discordi"): ["discord-canary"],
+    ("abrir discord canary", "abrir discordi canari", "abrir chat", "abrir chati"): ["discord-canary"],
+    ("abrir gimp", "abrir gimpi", "abrir editor de imagem"): ["gimp"],
     ("abrir brave", "abrir breive", "abrir breve", "abrir brêivi"): ["brave"],
     ("abrir terminal", "abrir o terminal", "abrir kitty"): ["kitty"],
 
     #------------------ FECHAMENTO ------------------------------
-    ("fechar vscode", "fechar vs code"): ["hyprctl", "dispatch", "closewindow", "class:^(code)$"],
-    ("fechar firefox", "fechar faiarfox"): ["hyprctl", "dispatch", "closewindow", "class:^(firefox)$"],
-    ("fechar discord", "fechar discordi"): ["hyprctl", "dispatch", "closewindow", "class:^(discord-canary)$"],
+    ("fechar vscode", "fechar vscode"): ["hyprctl", "dispatch", "closewindow", "class:^(code)$"],
+    ("fechar firefox", "fechar faiarfox", "fechar raposa"): ["hyprctl", "dispatch", "closewindow", "class:^(firefox)$"],
+    ("fechar discord canary", "fechar discordi canari", "fechar chat", "fechar chati"): ["hyprctl", "dispatch", "closewindow", "class:^(discord-canary)$"],
+    ("fechar gimp", "fechar gimpi", "fechar editor de imagem"): ["hyprctl", "dispatch", "closewindow", "class:^(gimp)$"],
     ("fechar brave", "fechar breive", "fechar breve"): ["hyprctl", "dispatch", "closewindow", "class:^(brave-browser)$"],
     ("fechar terminal", "fechar kitty"): ["hyprctl", "dispatch", "closewindow", "class:^(kitty)$"],
     ("fechar janela", "fechar programa", "matar processo"): ["hyprctl", "dispatch", "killactive"],
