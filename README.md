@@ -1,24 +1,47 @@
-# 🎙️ Sexta-Feira: Assistente de Voz Offline para Hyprland
+# Lucy (Sexta-Feira / Friday): Assistente Virtual Offline para Hyprland
 
-A **Sexta-Feira** é um assistente de voz leve, modular e **100% offline** desenvolvido especificamente para o ecossistema **Arch Linux + Hyprland**. Utilizando o motor de reconhecimento de fala **Vosk** e o algoritmo de busca aproximada **RapidFuzz**, o projeto permite controlar janelas, gerenciar mídias (Spotify), ajustar volumes e abrir aplicações de forma instantânea através de comandos de voz, com consumo mínimo de recursos de hardware.
-
----
-
-## ✨ Funcionalidades Prontas para Uso
-
-* **100% Offline & Privacidade Garantida:** Sem envio de dados para servidores externos (Google, Amazon ou OpenAI).
-* **Controle de Janelas Nativo (Hyprland):** Fechamento de janelas por classe (`class`), alternância de tela cheia e encerramento forçado usando `hyprctl`.
-* **Controle de Mídia Inteligente:** Comandos para abrir o Spotify Web encapsulado no Brave Browser como WebApp (`--app`), além de comandos para pausar, dar play e pular faixas via `playerctl`.
-* **Gerenciamento de Áudio Universal:** Controle preciso do ganho de volume (aumentar, diminuir e alternar mudo) baseado na API do WirePlumber (`wpctl`).
-* **Algoritmo Anti-Falso-Positivo:** Substituição do processamento parcial por correspondência estrita baseada em tokens (`fuzz.token_sort_ratio`) com limite seguro de 80%, evitando aberturas acidentais (ex: confundir Discord com VS Code).
-* **Trava de Instância Única (PID Lock):** Mecanismo automático para impedir que múltiplos daemons tentem disputar o mesmo canal de captura de áudio.
+A **Lucy** (originalmente **Sexta-Feira**) e uma assistente virtual leve, modular e **100% offline** desenvolvida para o ecossistema **Arch Linux + Hyprland**. Utilizando **Vosk** para reconhecimento de fala, **RapidFuzz** para busca aproximada anti-falso-positivo e **PySide6** para uma interface grafica com rosto animado, o projeto permite controlar janelas, gerenciar midias (Spotify/Playerctl), ajustar volumes (WirePlumber) e abrir aplicacoes por voz ou texto.
 
 ---
 
-## 🛠️ Pré-requisitos do Sistema
+## Funcionalidades
 
-Antes de rodar o assistente, certifique-se de ter os pacotes de sistema necessários instalados no seu Arch Linux.
+- **Interface Grafica com Rosto Animado (Lucy):** Rosto holografico em 60 FPS com olhos que piscam naturalmente e acompanham o cursor, aneis HUD rotativos, expressoes por estado (aguardando, ouvindo, processando, falando, erro) e boca/equalizador reativos ao audio.
+- **Modo Texto Integrado:** Permite enviar comandos digitados diretamente pela interface mesmo se o microfone ou modelo Vosk nao estiver disponivel.
+- **Bilingue (PT-BR / EN-US):** Alternancia de idioma em tempo real na interface ou via parametro `--lang pt` / `--lang en`.
+- **100% Offline e Privado:** Nenhum audio ou comando e enviado para servidores externos.
+- **Controle de Janelas Nativo (Hyprland):** Fechamento por classe (`class`), encerramento ativo e tela cheia via `hyprctl`.
+- **Controle de Midia e Audio:** Integracao com `playerctl` (Spotify/mplayer) e `wpctl` (WirePlumber/PipeWire).
+- **Trava de Instancia Unica Inteligente (PID Lock):** Verifica se o PID salvo realmente esta ativo, removendo travas obsoletas automaticamente.
+
+---
+
+## Pre-requisitos e Instalacao
 
 ```bash
-# Instalar dependências de áudio, controle de mídia e ferramentas auxiliares
-sudo pacman -S python-pip sounddevice-dependencies playerctl wireplumber libnotify wget unzip
+# Pacotes de sistema (Arch Linux)
+sudo pacman -S python-pip portaudio playerctl wireplumber libnotify wget unzip
+
+# Dependencias Python
+pip install -r requirements.txt
+```
+
+---
+
+## Como Executar
+
+```bash
+# Iniciar com interface grafica da Lucy (padrao PT-BR)
+python3 lucy.py
+
+# Iniciar em ingles
+python3 lucy.py --lang en
+
+# Especificar caminho customizado do modelo Vosk
+python3 lucy.py --model /caminho/para/modelo
+
+# Iniciar apenas em modo terminal/daemon (sem janela)
+python3 lucy.py --no-gui
+```
+
+Os atalhos `sexta-feira.py` (padrao `pt`) e `friday.py` (padrao `en`) continuam funcionando normalmente.
